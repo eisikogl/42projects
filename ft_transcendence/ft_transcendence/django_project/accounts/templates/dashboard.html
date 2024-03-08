@@ -1,0 +1,431 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONG</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+    background-image: linear-gradient(to right, #141e30, #243b55);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+        #navbar-logo {
+            max-height: 40px; /* İstenilen yüksekliğe ayarlayabilirsiniz */
+        }
+
+        #navbar {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-group-item span {
+        order: 1;
+    }
+
+    .list-group-item a {
+        order: 2;
+        margin-left: auto;
+        margin-right: 2px; /* Adjust the desired margin value */
+    }
+
+    .list-group-item button {
+        order: 3;
+        margin-left: 2px; /* Adjust the desired margin value */
+    }
+
+
+        #sidebar, #friend-section {
+            height: 100vh;
+            padding: 20px;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+            margin-top: 56px; /* Navbar'ın yüksekliği kadar içerikle arasına boşluk bırakıyoruz */
+        }
+
+        #chat-section {
+            height: 100vh;
+            padding: 20px;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+            margin-top: 56px; /* Navbar'ın yüksekliği kadar içerikle arasına boşluk bırakıyoruz */
+        }
+
+        /* Sağ Taraftaki Arkadaşlar */
+        #friend-list {
+            max-height: 100%;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+        }
+
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            color: white;
+        }
+.bg-glass1 {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    color: white;
+}
+#online {
+    font-size: 48px;
+    margin-right: 3px;
+    color: green;
+}
+#offline {
+    font-size: 48px;
+    margin-right: 3px;
+    color: gray;
+}
+    </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-glass1">
+    <a class="navbar-brand" href="{% url 'dashboard' %}">
+        <img src="{% static 'logo.png' %}" width="150" height="30" class="d-inline-block align-top" alt="Pong Game">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a id="tr_leaderboard" class="nav-link" href = "{% url 'leaderboard' %}">Leaderboard</a>
+        </li>
+        <li class="nav-item">
+          <a id="tr_profile" class="nav-link" href="{% url 'profile' id=request.user.id %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a id="tr_logout" class="nav-link" href="{% url 'user-logout' %}">Log Out</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+        <!-- Sol Taraftaki Kanallar -->
+
+        <div id="chat-section" class="col-md-3 bg-glass">
+            <!-- Tournement Lobbies -->
+            <h4 id="tr_tournement_header">Tournement Lobbies</h4>
+            <!-- Group List -->
+            <ul class="list-group" id="group-list">
+                {% for lobby in tournements %}
+                <li class="list-group-item">
+                    <span> {{ lobby.lobby_creator }}
+                    <span id="tr_tournement">tournement</span>
+                    <span> {{ lobby.count }}/4</span>
+                    <a id="tr_enter_button" href="{% url 'tournementlobby' lobby.id %}" class="btn btn-success btn-sm">Enter</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <br><br>
+            <!-- Groups -->
+            <h4 id="tr_groups_header" >Groups</h4>
+            <button class="btn btn-success btn-sm" onclick="openCreateRoomPanel()">+</button>
+            <br><br>
+            <!-- Search Bar -->
+            <div class="mb-3 input-group">
+                <input id="tr_group_search" type="text" class="form-control" id="group-search" placeholder="Search Groups" oninput="searchgroups()">
+            </div>
+            <!-- Group List -->
+            <ul class="list-group" id="group-list">
+                {% for group in groups %}
+                <li class="list-group-item">
+                    <span id="groupname">{{ group.group_name }}</span>
+                    <a id="tr_enter_button" onclick="enterGroupPanel(this)" class="btn btn-success btn-sm">Enter</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <br><br>
+            <!-- Users -->
+            <h4 id="tr_users_header" >Users</h4>
+            <ul class="list-group" id="friend-request-list">
+                {% for user in users %}
+                {% if user != request.user %}
+                <li class="list-group-item">
+                    <span>{{ user.username }}</span>
+                    {% if user.is_online %}
+                        <h1 id="online">·</h1>
+                    {% else %}
+                        <h1 id="offline">·</h1>
+                    {% endif %}
+                    <a id="tr_profile" href="{% url 'profile' user.id %}" class="btn btn-success btn-sm">Profile</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <!-- Grup Oluşturma Paneli -->
+        <div id="create-group-panel" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="tr_group_create_header" class="modal-title">Create group</h5>
+                        <button id="tr_close" type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeCreateRoomPanel()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h2 id="errmsgcreate"></h2>
+                        <form id="create-group-form">
+                            <div class="form-group">
+                                <label id="tr_group_name">Group Name:</label>
+                                <input type="text" class="form-control" name="group_name" id="group-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label id="tr_group_password">Password:</label>
+                                <input type="password" class="form-control" name="password" id="group-password">
+                            </div>
+                            <button id="tr_group_create" type="button" class="btn btn-primary" onclick="createGroup()">Create</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Grup Giriş Paneli -->
+        <div id="enter-group-panel" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="tr_enter_button" class="modal-title">Enter group</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeCreateRoomPanel()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h2 id="errmsgenter"></h2>
+                        <form id="enter-group-form" onsubmit="enterGroup(); return false;">
+                            <div class="form-group">
+                                <h1 for="group_name" id="group-name-label" id="tr_group_name">Group Name</h1>
+                            </div>
+                            <div class="form-group">
+                                <label id="tr_group_password" >Password:</label>
+                                <input type="password" class="form-control" name="password" id="enter-group-password">
+                            </div>
+                            <button id="tr_enter_button" type="submit" class="btn btn-primary">Enter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orta Kısımdaki Play Bölümü -->
+        <div id="chat-section" class="col-md-6">
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="btn-group-vertical">
+                <a id="tr_play_ai" href="{% url 'ailobby' %}" class="btn btn-lg bg-glass1">PLAY PONG vs AI</a>
+                <a id="tr_play_2_players" href="{% url 'play2players' %}" class="btn btn-lg bg-glass1">PLAY PONG 2 PLAYERS</a>
+                <a id="tr_play_remote" href="{% url 'lobby' %}" class="btn btn-lg bg-glass1">PLAY PONG vs REMOTE PLAYERS</a>
+                <a id="tr_create_tournement" href="{% url 'createtournementlobby' %}" class="btn btn-lg bg-glass1">CREATE TOURNEMENT</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sağ Taraftaki Arkadaşlar -->
+        <div id="friend-section" class="col-md-3 bg-glass">
+          <!-- Game Invites -->
+          <div name="Friend Requests" style="padding-bottom: 15px;">
+              <h4 id="tr_game_invites" >Game Invites</h4>
+              <ul class="list-group" id="friend-request-list">
+                  {% for invite in invites %}
+                  <!-- GÖNDEREN KİŞİNİN İSMİ GÖZÜKECEK, ACCEPT VE DECLINE SEÇENEKLERİ OLACAK -->
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+						{{ invite.name }}
+                          <div class="btn-group">
+                            <a id="tr_accept" href="{% url 'acceptinvite' invite.name invite.lobby %}" class="btn btn-primary">Accept</a>
+                            <span style="margin: 0 5px;"></span>
+                            <a id="tr_decline" href="{% url 'declineinvite' invite.name invite.lobby %}" class="btn btn-danger">Decline</a>
+                            </div>
+                      </li>
+                  {% endfor %}
+              </ul>
+            </div>
+          <!-- Friend Requests -->
+          <div name="Friend Requests" style="padding-bottom: 15px;">
+              <h4 id="tr_friend_requests" >Friend Requests ({{ friend_request_count }})</h4>
+              <ul class="list-group" id="friend-request-list">
+                  {% for request in friend_requests %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          {{ request.username }}
+                          <div class="btn-group">
+                              <a id="tr_accept" href="{% url 'acceptrequest' request.id %}" class="btn btn-primary">Accept</a>
+                              <span style="margin: 0 5px;"></span>
+                              <a id="tr_decline" href="{% url 'declinerequest' request.id %}" class="btn btn-danger">Decline</a>
+                          </div>
+                      </li>
+                  {% endfor %}
+              </ul>
+            </div>
+      
+          <!-- Friends -->
+          <div name="Friends">
+              <h4 id="tr_friends_header" >Friends</h4>
+              <!-- Search Bar -->
+              <div class="mb-3 input-group">
+                  <input id="tr_friend_search" type="text" class="form-control" id="friend-search" placeholder="Search Friends" oninput="searchFriends()">
+              </div>
+              <!-- Friend List -->
+              <ul class="list-group" id="friend-list">
+                  {% for friend in friends %}
+                    <li class="list-group-item">
+                        <span>{{ friend.username }}</span>
+                        {% if friend.is_online %}
+                            <h1 id="online">·</h1>
+                        {% else %}
+                            <h1 id="offline">·</h1>
+                        {% endif %}
+                        <a id="tr_dm" href="{% url 'dm' friend.id %}" class="btn btn-success btn-sm">DM</a>
+                        <a id="tr_profile" href="{% url 'profile' friend.id %}" class="btn btn-success btn-sm">Profile</a>
+                        <a id="tr_invite" href="{% url 'sendinvite' friend.id %}" class="btn btn-success btn-sm">Invite</a>
+                    </li>
+                  {% endfor %}
+              </ul>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+{{ request.user.language|json_script:"language" }}
+  <!-- Dashboard Content -->
+  
+  <!-- Bootstrap JS ve Popper.js ekleyin (sırası önemli) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="{% static 'pages/dashboard.js' %}"></script>
+  <script>
+    const socket = new WebSocket(
+    'wss://'
+    + window.location.host
+    + '/ws/dashboard/'
+    );
+
+var csvUrl = "{% static "locale.csv" %}"
+
+
+function createGroup() {
+    var groupName = $('#group-name').val().trim();
+    var groupPassword = $('#group-password').val().trim();
+    if (groupName === '' || groupPassword === '' || groupName.includes(' ') || groupPassword.includes(' ')) {
+        const err = "Inputs can't include spaces and must be filled.";
+        document.getElementById('errmsgcreate').innerHTML = err;
+    } else {
+        var url = '{% url "group" group_name="__GROUP_NAME__" password="__PASSWORD__" %}'.replace('__GROUP_NAME__', groupName).replace('__PASSWORD__', groupPassword);
+        window.location.href = url;
+    }
+}
+
+
+function enterGroup() {
+    var groupName = document.getElementById('group-name-label').innerHTML;
+    var groupPassword = $('#enter-group-password').val();
+    if (groupPassword === '' || groupPassword.includes(' ')) {
+        const err = "Input can't include spaces and must be filled.";
+        document.getElementById('errmsgenter').innerHTML = err;
+    } else {
+        var url = '{% url "group" group_name="__GROUP_NAME__" password="__PASSWORD__" %}'.replace('__GROUP_NAME__', groupName).replace('__PASSWORD__', groupPassword);
+        window.location.href = url;
+    }
+}
+
+
+
+function enterGroupPanel(clickedInput) {
+        var groupName = document.getElementById('groupname').textContent
+        document.getElementById('group-name-label').innerHTML = groupName;
+        $('#enter-group-panel').modal('show');
+    }
+
+    function closeEnterGroupPanel() {
+        $('#enter-group-panel').modal('hide');
+    }
+
+function openCreateRoomPanel() {
+        $('#create-group-panel').modal('show');
+    }
+
+    function closeCreateRoomPanel() {
+        $('#create-group-panel').modal('hide');
+    }
+
+   function searchgroups() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById('group-search');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("group-list");
+        li = ul.getElementsByTagName('a');
+
+        for (i = 0; i < li.length; i++) {
+            a = li[i];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+
+    function clearSearch() {
+        var input, ul, li, i;
+        input = document.getElementById('group-search');
+        ul = document.getElementById("group-list");
+        li = ul.getElementsByTagName('li');
+
+        // Temizleme işlemi
+        input.value = "";
+
+        // Tüm kanalları gösterme
+        for (i = 0; i < li.length; i++) {
+            li[i].style.display = "";
+        }
+    }
+
+    function searchFriends() {
+        var input, filter, ul, li, span, i;
+        input = document.getElementById('friend-search');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("friend-list");
+        li = ul.getElementsByTagName('li');
+
+        for (i = 0; i < li.length; i++) {
+            span = li[i].getElementsByTagName("span")[0];
+            if (span.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+  </script>
+</body>
+</html>

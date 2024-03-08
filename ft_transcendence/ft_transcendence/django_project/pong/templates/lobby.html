@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    {% load static %}
+</head>
+<h1>...</h1>
+<h1>{{ lobby_id }}</h1>
+<body style="background-color: darkslategray;">
+  {{ lobby_id |json_script:"lobby-id" }}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const lobbyID = JSON.parse(document.getElementById('lobby-id').textContent);
+      console.log(lobbyID)
+      const socket = new WebSocket(
+            'wss://'
+            + window.location.host
+            + '/ws/pong/lobby/'
+            + lobbyID
+            + '/'
+        );
+
+
+socket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'lobby_status') {
+        // Güncellenmiş lobby durumu
+        const lobbies = data.message;
+        const full = lobbies.full;
+        // Lobby durumunu kullanarak sayfayı güncelle (örneğin, bir liste içinde lobileri göster)
+        console.log('Updated lobby list:', lobbies);
+        
+        if (full)
+            window.location.href = "{% url 'dashboard' %}";
+    }
+};
+});
+  </script>
+</body>
+</html>

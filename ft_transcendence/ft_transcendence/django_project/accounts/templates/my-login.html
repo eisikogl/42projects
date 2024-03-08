@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: linear-gradient(to right, #141e30, #243b55);
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            color: white;
+        }
+
+        .container-custom {
+            max-width: 400px;
+        }
+    </style>
+    <title>Login</title>
+</head>
+<body>
+
+<div class="container bg-glass mx-auto container-custom">
+    <h1 class="text-center mb-4">Login!</h1>
+    <form method="POST" autocomplete="off" class="d-flex flex-column align-items-center">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label id="tr_username" for="{{ loginform.username.id_for_label }}">Username</label>
+            {{ loginform.username }}
+        </div>
+
+        <div class="mb-3">
+            <label id="tr_password" for="{{ loginform.password.id_for_label }}">Password</label>
+            {{ loginform.password }}
+        </div>
+
+        {% if loginform.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ loginform.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="text-center">
+            <input id="tr_login" type="submit" class="btn btn-primary" value="Login">
+        </div>
+    </form>
+    <a id="tr_signup" href="{% url 'sign-up' %}">Sign Up</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

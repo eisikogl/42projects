@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: linear-gradient(to right, #141e30, #243b55);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: stretch;
+      min-height: 100vh;
+    }
+
+    .c2 {
+    width: 70%;
+    height: 70vh;
+    overflow-y: auto; /* Enable vertical scrollbar */
+    margin-top: 12%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    text-align: center;
+    padding: 40px 90px;
+    color: #fff;
+    position: relative;
+    border-radius: 20px;
+  }
+
+    .c1 {
+      width: 30%;
+      height: 30vh;
+      margin-top: 17%;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      text-align: center;
+      padding: 40px 90px;
+      color: #fff;
+      position:relative;
+      border-radius: 20px;
+    }
+
+    .c1 img{
+    width: 75%; /* Resmi konteynır genişliğine sığdır */
+    height: auto; /* Oranları koru, yüksekliği otomatik ayarla */
+    display: flex; /* Resmi bir blok öğesi olarak göster */
+    margin: 0 auto; /* Resmi yatayda ortala */
+}
+
+    .sticky-top {
+      top: 0;
+      position: sticky;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 10px;
+      background-color: #ccc; /* Add a background color for troubleshooting */
+    }
+    .list-group-item, .list-group
+    {
+      background: rgba(255, 255, 255, 0.12);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .username {
+      font-size: 24px;
+    }
+    .button-style {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.bg-glass1 {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            color: white;
+        }
+    
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            color: white;
+        }
+    
+        #navbar-logo {
+            max-height: 40px; /* İstenilen yüksekliğe ayarlayabilirsiniz */
+        }
+    
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0; /* Navbar'ı en üstte sabit tutmak için top: 0 ayarı */
+            z-index: 1000;
+        }
+    
+        .navbar-brand {
+            margin-left: 15px; /* Navbar logosuyla arasında bir boşluk bırakmak için */
+        }
+
+    .sticky-bottom {
+      bottom: 0;
+      position: sticky;
+      background-color: #f0f0f0;
+    }
+  </style>
+  <title>PONG</title>
+</head>
+<body>
+
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-glass1">
+  <a class="navbar-brand" href="{% url 'dashboard' %}">
+      <img src="{% static 'logo.png' %}" width="150" height="30" class="d-inline-block align-top" alt="Pong Game">
+  </a>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+          <a id="tr_leaderboard" class="nav-link" href = "{% url 'leaderboard' %}">Leaderboard</a>
+      </li>
+      <li class="nav-item">
+        <a id="tr_profile" class="nav-link" href="{% url 'profile' id=request.user.id %}">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a id="tr_logout" class="nav-link" href="{% url 'user-logout' %}">Log Out</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+  <div class="container sticky-top c1">
+    <div id="imageContainer">
+      <img src="{% static 'leaderboard.png' %}" alt="Tea Image">
+    </div>
+  </div>
+
+  <div class="c2">
+    <div class="container-lg">
+      <div class="text-center">
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="list-group">
+
+              <div class="list-group-item py-3">
+              {%for user in users%}
+              <h2 class="mb-3">{{ user.username }}: {{ user.elo }}</h2>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <!-- Orta konteyner içeriği buraya eklenebilir -->
+  </div>
+  </div>
+  {{ language|json_script:"language" }}
+  <script src="{% static 'pages/leaderboard.js' %}"></script>
+  <script>
+      const chatSocket = new WebSocket(
+        'wss://'
+        + window.location.host
+        + '/ws/leaderboard/'
+      );
+      var csvUrl = "{% static "locale.csv" %}"
+  </script>
+</body>
+</html>

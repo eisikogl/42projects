@@ -1,0 +1,412 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournement Lobby</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+    background-image: linear-gradient(to right, #141e30, #243b55);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+        #navbar-logo {
+            max-height: 40px; /* İstenilen yüksekliğe ayarlayabilirsiniz */
+        }
+
+        #navbar {
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-group-item span {
+        order: 1;
+    }
+
+    .list-group-item a {
+        order: 2;
+        margin-left: auto;
+        margin-right: 2px; /* Adjust the desired margin value */
+    }
+
+    .list-group-item button {
+        order: 3;
+        margin-left: 2px; /* Adjust the desired margin value */
+    }
+
+
+        #sidebar, #friend-section {
+            height: 100vh;
+            padding: 20px;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+            margin-top: 56px; /* Navbar'ın yüksekliği kadar içerikle arasına boşluk bırakıyoruz */
+        }
+
+        #chat-section {
+            height: 100vh;
+            padding: 20px;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+            margin-top: 56px; /* Navbar'ın yüksekliği kadar içerikle arasına boşluk bırakıyoruz */
+        }
+
+        /* Sağ Taraftaki Arkadaşlar */
+        #friend-list {
+            max-height: 100%;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+        }
+
+        #chat-section, #friend-section {
+            position: sticky;
+            top: 65px; /* Adjust according to the height of your navbar */
+            margin-top: 85px; /* Add margin to push them below the navbar */
+            padding: 20px;
+            overflow-y: auto; /* Add scrollbar when content exceeds container height */
+            height: calc(100vh - 56px - 50px); /* Adjust height considering navbar and margin */
+        }
+
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            color: white;
+        }
+.bg-glass1 {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    color: white;
+}
+.startbuttonclass{
+    display: none;
+    background-color: #3498DB;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  width: 125px;
+}
+.show {display: block;}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.tournament {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  background-color: #212529;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+  color: #f5c344;
+  margin-bottom: 10px;
+}
+
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.bracket {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.round {
+  text-align: center;
+}
+
+.round h2 {
+  margin-bottom: 20px;
+}
+
+.match {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.team {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: red;
+  margin-bottom: 10px;
+  min-width: 100px;
+}
+
+.team.winner {
+  background-color: green;
+}
+
+
+.round.final .match .line {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .bracket {
+    grid-template-columns: 1fr;
+  }
+}
+
+    </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand bg-glass1" style="position: fixed; top: 0; width: 100%;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <img src="{% static 'logo.png' %}" width="150" height="30" class="d-inline-block align-top" alt="Pong Game">
+          </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a id="tr_leaderboard" class="nav-link" href="{% url 'leaderboard' %}">Leaderboard</a>
+                </li>
+                <li class="nav-item">
+                    <a id="tr_profile" class="nav-link" href="{% url 'profile' id=request_id %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a id="tr_logout" class="nav-link" href="{% url 'user-logout' %}">Log Out</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+  <div class="container-fluid">
+    <div class="row">
+        <div id="chat-section" class="col-md-3 bg-glass">
+            <h4>Users</h4>
+            <ul class="list-group" id="friend-request-list">
+            </ul>
+            <br><br>
+            <button id="startbutton" onclick="startTournement()" class="startbuttonclass">Start Tournement</button>
+        </div>
+        <div id="chat-section" class="col-md-7 bg-glass">
+            <div class="tournament" style="margin-bottom: 50px;">
+                <h1 id="tr_table" >Tournement Table</h1>
+                
+                <div class="bracket">
+                  
+              
+                  <div class="round semi-finals">
+                    <h2 id="tr_semifinals" >Semifinals</h2>
+                    <div class="match">
+                      <div class="team winner" id="s1_1">NOT PLAYED</div>
+                      <div class="line"></div>
+                      <div id='s1_2' class="team">NOT PLAYED</div>
+                    </div>
+                    <div class="match">
+                      <div class="team winner" id="s2_1">NOT PLAYED</div>
+                      <div class="line"></div>
+                      <div class="team" id="s2_2">NOT PLAYED</div>
+                    </div>
+                  </div>
+              
+                  <div class="round final">
+                    <h2 id="tr_final">Final</h2>
+                    <div class="match">
+                      <div class="team winner" id="f_1">NOT PLAYED</div>
+                      <div class="team" id="f_2">NOT PLAYED</div>
+                    </div>
+                  </div>
+                  <div class="round final">
+                    <div class="match">
+                      <h1 id="winnerh1"></h1>
+                      <div id="winnerdiv"></div>
+                    </div>
+                  </div>
+                  <div class="bg-gray d-flex flex-column align-items-center justify-content-center">
+                    <div id="playbuttondiv" class="text-center mt-md-4">
+                      <a id="playbutton" class="startbuttonclass">Play</a>
+                    </div>
+                </div>
+              
+              </div>
+            
+        </div>
+    </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{{ lobby.id|json_script:"lobby-id" }}
+{{ myname|json_script:"myname" }}
+{{ language|json_script:"language" }}
+<script src="{% static 'pages/tournementlobby.js' %}"></script>
+<script>
+    var csvUrl = "{% static "locale.csv" %}"
+</script>
+<script>
+    const lobbyID = JSON.parse(document.getElementById('lobby-id').textContent);
+    const myName = JSON.parse(document.getElementById('myname').textContent);
+    const socket = new WebSocket('wss://'+ window.location.host+ '/ws/pong/tournementlobby/' + lobbyID + '/');
+    s_1_1 = document.getElementById("s1_1")
+    s_1_2 = document.getElementById("s1_2")
+    s_2_1 = document.getElementById("s2_1")
+    s_2_2 = document.getElementById("s2_2")
+    f_1 = document.getElementById("f_1")
+    f_2 = document.getElementById("f_2")
+    let players;
+
+    function update_table(message)
+    {
+      lobby1 = message.lobby1
+      lobby2 = message.lobby2
+      lobby3 = message.lobby3
+      if (lobby1.id != -1 && lobby2.id != -1)
+      {
+        s_1_1.innerText = lobby1.player1 + " - " + lobby1.score1
+        s_1_2.innerText = lobby1.player2 + " - " + lobby1.score2
+        s_2_1.innerText = lobby2.player1 + " - " + lobby2.score1
+        s_2_2.innerText = lobby2.player2 + " - " + lobby2.score2
+      }
+      if (lobby3.id != -1)
+      {
+        f_1.innerText = lobby3.player1 + " - " + lobby3.score1
+        f_2.innerText = lobby3.player2 + " - " + lobby3.score2
+      }
+    }
+
+    function create_play_button(message)
+    {
+      update_table(message)
+      lobby1 = message.lobby1
+      lobby2 = message.lobby2
+      lobby3 = message.lobby3
+      playLobbyID = -1
+      if (lobby3.id === -1)
+      {
+        if (myName === lobby1.player1 || myName === lobby1.player2)
+          playLobbyID = lobby1.id;
+        else if (myName === lobby2.player1 || myName === lobby2.player2)
+          playLobbyID = lobby2.id;
+      }
+      else
+      {
+        if (myName === lobby3.player1 || myName === lobby3.player2)
+          playLobbyID = lobby3.id;
+      }
+      if (playLobbyID != -1)
+      {
+        playbutton = document.getElementById("playbutton");
+        playbutton.style.display = 'block';
+        playbutton.addEventListener("click", function()
+        {
+          window.location.href = "/pong/" + playLobbyID + "/";
+        });
+      }
+    }
+    function tournement_end(message)
+    {
+      update_table(message)
+      playbutton = document.getElementById("playbutton");
+      playbutton.style.display = 'none';
+      h1 = document.getElementById("winnerh1")
+      h1.innerText = "WINNER"
+      div = document.getElementById("winnerdiv")
+      div.classList = "team winner"
+      div.innerText = message.lobby3.winner
+    }
+
+    socket.onmessage = function(e)
+    {
+        let lobbyID;
+        const data = JSON.parse(e.data);
+        message = data.message
+        type = message.type
+        console.log("Message Type: " + type)
+        if (type == 'user_connected')
+        {
+            players = message.players
+
+            const userList = document.getElementById("friend-request-list");
+            while (userList.firstChild)
+                userList.removeChild(userList.firstChild);
+            for(let i = 0; i < players.length; i++)
+            {
+                li = document.createElement("li");
+                li.classList.add("list-group-item");
+                span = document.createElement("span");
+                span.textContent = players[i];
+                li.appendChild(span);
+                document.getElementById("friend-request-list").appendChild(li);
+            }
+        }
+        else if (type == 'lobby_full')
+        {
+          if (myName == message.admin)
+              document.getElementById("startbutton").style.display = "block"
+        }
+        else if (type == 'create_play_button')
+          create_play_button(message)
+        else if (type == 'update_table')
+          update_table(message)
+        else if (type == 'tournement_end')
+          tournement_end(message)
+    };
+    
+    function startTournement()
+    {
+      document.getElementById("startbutton").style.display = "none"
+        socket.send(JSON.stringify({
+                'type': 'startTournement'
+        }));
+    }
+</script>
+
+</body>
+</html>

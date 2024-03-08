@@ -1,0 +1,57 @@
+msg_id,tr,en,es,fr
+tournement_header,Turnuva Odaları,Tournament Lobbies,Lobbies de Torneo,Lobbys de tournoi
+tournement, turnuvası, tournement, torneo,tournoi
+language_button,Dili Değiştir,Change Language,Cambiar Idioma,Changer de Langue
+leaderboard,Lider Tablosu,Leaderboard,Tabla de Posiciones,Classement
+profile,Profil,Profile,Perfil,Profil
+logout,Çıkış Yap,Log Out,Cerrar Sesión,Déconnexion
+enter_button,Giriş,Enter,Entrar,Entrer
+groups_header,Gruplar,Groups,Grupos,Groupes
+group_search,Grup Ara,Search Group,Buscar Grupo,Rechercher un Groupe
+users_header,Kullanıcılar,Users,Usuarios,Utilisateurs
+group_create_header,Grup Oluştur,Create Group,Crear Grupo,Créer un Groupe
+close,Kapat,Close,Fermer,Fermer
+group_name,Grup Adı,Group Name,Nombre del Grupo,Nom du Groupe
+password,Şifre,Password,Contraseña,Mot de Passe
+group_create,Oluştur,Create,Crear,Créer
+play_ai,AI İLE OYNA,PLAY VS AI,Jugar contra IA,Jouer contre l'IA
+play_2_players,2 KİŞİLİK OYNA,PLAY 2 PLAYERS,Jugar 2 Jugadores,Jouer à 2 joueurs
+play_remote,BAŞKA OYUNCUYLA EŞLEŞ,MATCH ANOTHER PLAYER,Jugar con otro jugador,Jouer avec un autre joueur
+create_tournement,TURNUVA OLUŞTUR,CREATE TOURNEMENT,Crear Torneo,Créer un tournoi
+game_invites,Oyun İstekleri,Game Invites,Solicitudes de Juego,Invitations de Jeu
+accept,Kabul Et,Accept,Aceptar,Accepter
+decline,Reddet,Decline,Rechazar,Décliner
+friend_requests,Arkadaşlık İstekleri,Friend Requests,Solicitudes de Amistad,Demandes d'Ami
+friends_header,Arkadaşlar,Friends,Amigos,Amis
+friend_search,Arkadaş Ara,Search Friend,Buscar Amigo,Rechercher un Ami
+dm,Mesaj Gönder,Direct Message,Mensaje Directo,Message Direct
+invite,Davet Et,Invite,Invitar,Inviter
+edit_profile,Profili Düzenle,Edit Profile,Editar Perfil,Modifier le Profil
+username,Kullanıcı Adı,Username,Nombre de Usuario,Nom d'Utilisateur
+profile_picture,Profil Fotoğrafı,Profile Picture,Foto de Perfil,Photo de Profil
+select_language,Dil Seç,Select Language,Seleccionar Idioma,Sélectionner la Langue
+save,Kaydet,Save,Guardar,Enregistrer
+match_history,Maç Geçmişi,Match History,Historial de Partidas,Historique des Parties
+friend_request_send,Arkadaşlık İsteği Gönderildi,Friend Request Sent,Solicitud de Amistad Enviada,Demande d'Ami Envoyée
+add_friend,Arkadaş Ekle,Add Friend,Agregar Amigo,Ajouter un Ami
+unblock,Engeli Kaldır,Unblock,Desbloquear,Débloquer
+block,Engelle,Block,Bloquear,Bloquer
+wins,Kazanılan: ,Wins: ,Victorias: ,Victoires: 
+losses,Kaybedilen: ,Losses: ,Derrotas: ,Défaites: 
+elo,Puan: ,Elo: ,Elo: ,Elo: 
+blocked,Bloklandı,Blocked,Bloqueado,Bloqué
+send,Gönder,Send,Enviar,Envoyer
+founder,Kurucu,Founder,Fundador,Fondateur
+speaking, ile konuşuyorsun, speaking,Hablando,En train de parler
+remove_friend,Arkadaşlıktan Çıkar,Remove From Friend List,Eliminar Amigo,Supprimer de la Liste d'Amis
+return,Lobiye Geri Dön,Return to Lobby,Volver al Lobby,Retourner au Lobby
+end_game,Oyun Bitti,Game End,Fin del Juego,Fin du Jeu
+arrowup,Yukarı Yön Tuşu - Yukarı,Arrow Up - Up,Flecha Arriba - Arriba,Fleche Haut - Haut
+arrowdown,Aşağı Yön Tuşu - Aşağı,Arrow Down - Down,Flecha Abajo - Abajo,Fleche Bas - Bas
+wup,W - Yukarı,W - Up,W - Arriba,W - Haut
+sdown,S - Aşağı,S - Down,S - Abajo,S - Bas
+table,Turnuva Tablosu,Tournament Table,Tabla de Torneo,Tableau de Tournoi
+semifinals,Yarı Finaller,Semifinals, Semifinales,Demi-finales
+not_played,OYNANMADI,NOT PLAYED,NO JUGADO, NON JOUÉ
+playbutton,OYNA,PLAY,JUGAR,JOUEZ
+final,Final,Final,Final,Finale

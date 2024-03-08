@@ -1,0 +1,5 @@
+Credentials cache: API:7D750A23-5BE5-4316-84E7-116C7AA335F8
+        Principal: eisikogl@42ISTANBUL.COM.TR
+
+  Issued                Expires               Principal
+Sep  6 17:32:05 2021  Sep  7 03:32:00 2021  krbtgt/42ISTANBUL.COM.TR@42ISTANBUL.COM.TR

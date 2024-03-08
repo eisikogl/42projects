@@ -1,0 +1,191 @@
+<!-- chat/templates/chat/room.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONG</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-image: linear-gradient(to right, #141e30, #243b55);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+    
+        .bg-glass1 {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            color: white;
+        }
+    
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            color: white;
+        }
+    
+        #navbar-logo {
+            max-height: 40px; /* İstenilen yüksekliğe ayarlayabilirsiniz */
+        }
+    
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0; /* Navbar'ı en üstte sabit tutmak için top: 0 ayarı */
+            z-index: 1000;
+        }
+    
+        .navbar-brand {
+            margin-left: 15px; /* Navbar logosuyla arasında bir boşluk bırakmak için */
+        }
+        #chat-header {
+        margin-top: 90px; /* Navbar yüksekliği kadar bir boşluk bırak */
+        margin-bottom: 20px; /* Navbar yüksekliği kadar bir boşluk bırak */
+        position: relative; /* Position değerini relative yapın */
+    z-index: 1000; /* Container'ın altında kalacak şekilde z-index ayarı */
+}
+
+
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+#sidebar, #friend-section {
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto; /* Uzun içerik durumunda scrollbar ekle */
+            margin-top: 56px; /* Navbar'ın yüksekliği kadar içerikle arasına boşluk bırakıyoruz */
+        }
+
+    </style>
+    
+</head>
+<body>
+    
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-glass1">
+    <a class="navbar-brand" href="{% url 'dashboard' %}">
+        <img src="{% static 'logo.png' %}" width="150" height="30" class="d-inline-block align-top" alt="Pong Game">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a id="tr_leaderboard" class="nav-link" href = "{% url 'leaderboard' %}">Leaderboard</a>
+        </li>
+        <li class="nav-item">
+          <a id="tr_profile" class="nav-link" href="{% url 'profile' id=request.user.id %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a id="tr_logout" class="nav-link" href="{% url 'user-logout' %}">Log Out</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+
+    <div id="chat-header" class="bg-glass">
+      <h1>{{ group_name }}</h1>
+    </div>
+    <textarea class="bg-glass" id="chat-log" cols="100" rows="20" disabled></textarea><br>
+    <input class="bg-glass" id="chat-message-input" type="text" size="100"><br>
+    {% if is_blocked %}
+    <input class="bg-glass" id="chat-message-submit-blocked" type="button" value="Blocked" disabled>
+    {% else %}
+    <input class="bg-glass" id="chat-message-submit" type="button" value="Send">
+    {% endif %}
+    
+    
+    <!-- Active Users -->
+    <div id="friend-section" class="col-md-3 bg-glass">
+     <div name="Friends">
+      <h4 id="tr_founder" >Founder</h4>
+      <!-- Member List -->
+      <ul class="list-group" id="friend-list">
+          {% for member in members %}
+            <li class="list-group-item">
+                <span>{{ member.username }}</span>
+                <a id="tr_dm" href="{% url 'dm' member.id %}" class="btn btn-success btn-sm">DM</a>
+                <a id="tr_profile" href="{% url 'profile' member.id %}" class="btn btn-success btn-sm">Profile</a>
+                <button id="tr_invite" class="btn btn-success btn-sm" onclick="inviteGame('{{ member.username }}')">Invite</button>
+            </li>
+          {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  
+    {{ group_id | json_script:"group-name" }}
+    {{ language|json_script:"language" }}
+  <script src="{% static 'pages/group.js' %}"></script>
+
+    <script>
+
+        function dropdownFunction() {
+           document.getElementById("myDropdown").classList.toggle("show");
+        }
+        
+        const groupName = JSON.parse(document.getElementById("group-name").textContent);
+        const chatSocket = new WebSocket(
+            'wss://'
+            + window.location.host
+            + '/ws/group/'
+            + groupName
+            + '/'
+        );
+        var csvUrl = "{% static "locale.csv" %}"
+        {% for message in messages %}
+            appendToChatLog('{{ message.sender }}: {{ message.message }}\n');
+        {% endfor %}
+
+        function appendToChatLog(message) {
+            document.querySelector('#chat-log').value += message;
+            // Otomatik olarak en altta odaklan
+            //chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.sender + ': ' + data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+</body>
+</html>
